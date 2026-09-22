@@ -54,16 +54,6 @@ As a plugin: add this directory to a marketplace and `/plugin install agent-pipe
 Standalone: symlink `agents/*.md` into `~/.claude/agents/` and `skills/pipeline` into
 `~/.claude/skills/`.
 
-## With ideamine
-
-The [ideamine](https://github.com/equwal/ideamine) plugin is an idea inbox; `/ideas-pipeline [id]`
-(or `ideamine go <id> --pipeline` in a terminal) sends one idea through this pipeline. The
-request then ends with `ideamine idea id: <N>`, and the orchestrator adds a note to that idea
-after each phase (`pipeline: research done`, `pipeline: plan approved`, `pipeline: wave 1
-integrated`, ...), marks it done when the tester and the validator pass, and leaves it in
-`doing` with a note when the iteration cap is reached. The ideamine dashboard shows the latest
-note on the ticket, so the state of every run is visible in one place.
-
 ## Use
 
 In any project: `/pipeline <feature request>` — or ask to run the request "through the

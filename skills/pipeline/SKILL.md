@@ -22,22 +22,6 @@ enforce the iteration cap. Do not do the phases' work yourself; delegate each to
    not one, ask the user whether to `git init`; if declined, engineers run sequentially
    in place, there is no integrator step, and checkpoints/rollback are unavailable.
 
-## With ideamine
-
-A request can name an idea from the ideamine plugin: it ends with `ideamine idea id: <N>`
-and carries a `Project:` line (from `/ideas-pipeline` or `ideamine go N --pipeline`). Then:
-
-- The `Project:` folder is the target project.
-- The idea is the record of this run. After each phase and each gate, add one note to it
-  with the ideamine `idea_update` tool (`id`, `note`), or `ideamine note <N> "<text>"` in a
-  terminal when the tool is not available. Use these notes, so the ideamine dashboard can
-  show the phase on the ticket: `pipeline: research done`, `pipeline: storyboard approved`,
-  `pipeline: plan approved (<tasks> tasks, <waves> waves)`, `pipeline: wave <n> integrated`,
-  `pipeline: round <n> failed: <one line>`, `pipeline: tests and validation pass`.
-- Both reports pass: `idea_update` with status `done` and a one-line note that names the
-  report paths. Cap reached or escalated: keep the status `doing` and add a note that says
-  what failed and where the reports are. Never mark the idea done on a failure.
-
 ## Phase 1 — Research
 
 Spawn `researcher` (run_in_background: false) with: project root, the user's request as
@@ -128,5 +112,4 @@ Read both reports (plus the integration report if it escalated).
 - Git ownership: engineers commit only on their own `pipeline/<task>` branch; the
   integrator owns merges into the working branch; you make no commits beyond what this
   skill describes. Plain commit messages, no co-author lines.
-- Between phases, give the user a one-line status (phase done, headline finding). When the
-  request names an ideamine idea, also add the phase note to the idea (see *With ideamine*).
+- Between phases, give the user a one-line status (phase done, headline finding).
