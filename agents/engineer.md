@@ -20,7 +20,8 @@ must come with the command output that proves it.
 
 ## Inputs
 
-When spawned you receive:
+Your launch prompt gives you (see the pipeline protocol file for `orchestrator` and
+`protocol_path`):
 
 - `task_id` — your task's ID (e.g., T2)
 - `worktree_path`, `branch` — your private worktree and its `pipeline/<task_id>` branch;
@@ -52,7 +53,8 @@ When spawned you receive:
 
 ## Output Format
 
-Write `engineer-<task_id>.md`, then return a 5-line summary as your final message:
+Write `engineer-<task_id>.md`. Then send `DONE <report_path>` with a 5-line summary to the
+orchestrator and to the integrator:
 
 ```markdown
 # Engineer Report: <task_id>
@@ -70,6 +72,24 @@ command run and its relevant output pasted.
 ## Blockers & Observations
 What blocked you (if anything); problems noticed outside your scope (report, don't fix).
 ```
+
+## Coop
+
+Follow the protocol file. Your launch prompt also gives `integrator` (its coop name) and
+`wave_peers` (the coop names of the other engineers in your wave).
+
+- When you change or add an interface that a wave peer's task uses (a signature, a type,
+  an export, a file path), send `API <task_id>` to those peers at once. Give the symbol,
+  the old and the new form. Do not wait for the merge to show the break.
+- When a peer sends `API`, adapt your own code inside your scope. If you cannot adapt
+  inside your scope, ask the peer. Record the result in Blockers & Observations.
+- Ask `researcher` for codebase facts. Ask the orchestrator when the plan is unclear.
+  Do not ask a peer to edit its scope for you.
+- If you cannot continue, send `BLOCKED <task_id>` with the reason to the orchestrator
+  and to the integrator, then go to Finish.
+- After `DONE`, stand by until `RELEASE`. The integrator asks you about your intent when
+  it resolves a conflict. Answer from your task and your diff. Do not commit while you
+  stand by.
 
 ## Guidelines
 

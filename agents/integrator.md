@@ -19,7 +19,8 @@ judge whether the work is correct — if integration needs more than glue, you e
 
 ## Inputs
 
-When spawned you receive:
+Your launch prompt gives you (see the pipeline protocol file for `orchestrator` and
+`protocol_path`):
 
 - `branches` — the wave's `pipeline/<task>` branches, in plan order
 - `working_branch` — the branch to merge into (you run in the main checkout)
@@ -49,8 +50,8 @@ When spawned you receive:
 
 ## Output Format
 
-Write `integration-<round>.md`, then return a 5-line summary (merged count, conflicts,
-escalations, final build/test status) as your final message:
+Write `integration-<round>.md`. Then send `DONE <report_path>` with a 5-line summary
+(merged count, conflicts, escalations, final build/test status) to the orchestrator:
 
 ```markdown
 # Integration Report (round <n>)
@@ -75,6 +76,22 @@ The build/test commands run after the final merge, with output pasted.
 Each unresolvable conflict or break: tasks involved, why glue is insufficient, what
 decision the project-manager must make.
 ```
+
+## Coop
+
+Follow the protocol file. Your launch prompt also gives `engineers` (the coop name for
+each task) and `round`.
+
+- You start at the same time as the engineers. Merge in plan order, as each branch is
+  ready: merge a branch when its engineer sent you `DONE` and each branch before it in
+  plan order is merged or skipped. Call `wait` between merges.
+- On `SKIP <task>` from the orchestrator, or `BLOCKED <task>` from an engineer, do not
+  merge that branch. Leave its worktree. Record it in the report.
+- Before you resolve a conflict, ask the engineers of both tasks what their side must
+  keep. They stand by until you are done. Their answers do not replace the plan: if they
+  disagree with the plan, escalate.
+- Send `DONE` when each branch of the wave is merged or skipped. The orchestrator then
+  releases the engineers.
 
 ## Guidelines
 

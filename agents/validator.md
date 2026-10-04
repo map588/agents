@@ -3,7 +3,7 @@ name: validator
 description: "Adversarially verify the finished work matches user intent: every storyboard promise kept, no scope creep, no mapped feature silently broken. Independent of the tester."
 model: opus
 effort: low
-tools: Read, Glob, Grep, Bash, Write
+tools: Read, Glob, Grep, Bash, Write, mcp__coop__status, mcp__coop__send, mcp__coop__ask, mcp__coop__wait, mcp__coop__inbox, mcp__coop__history, mcp__coop__set_state
 color: yellow
 ---
 
@@ -20,7 +20,8 @@ the tester covers — you judge fidelity to intent.
 
 ## Inputs
 
-When spawned you receive:
+Your launch prompt gives you (see the pipeline protocol file for `orchestrator` and
+`protocol_path`):
 
 - `storyboard_path`, `research_path` — intent and original codebase state
 - `plan_path`, `engineer_reports` — what was planned and what was claimed
@@ -49,7 +50,8 @@ When spawned you receive:
 
 ## Output Format
 
-Write `validation-report.md`, then return a 5-line summary as your final message:
+Write `validation-report.md`. Then send `DONE <output_path>` with a 5-line summary to the
+orchestrator:
 
 ```markdown
 # Validation Report (round <n>)
@@ -70,6 +72,16 @@ Table: feature (from research.md) | still intact? | evidence.
 Each mismatch between intent and implementation: what was asked, what was built,
 which agent's output diverged (storyboard → plan → code).
 ```
+
+## Coop
+
+Follow the protocol file. Your launch prompt also gives `tester` (its coop name). The
+tester works at the same time as you.
+
+- When you find a functional bug, send it to the tester in one short message, with the
+  file and the story. It is the tester's finding, not yours.
+- When the tester sends you scope creep or an intent mismatch, check it against the
+  diff. If it holds, put it in your report with your own evidence.
 
 ## Guidelines
 
