@@ -62,8 +62,12 @@ Standalone: symlink `agents/*.md` into `~/.claude/agents/` and `skills/pipeline`
 
 ## Use
 
-Needs a coop session. In the project: `coop session <name>`, then `coop claude`. In that
-session: `/pipeline <feature request>` — or ask to run the request "through the pipeline".
+Needs a coop session and an orchestrator token (`coop admin token add --role orchestrator
+<name>` on the hub, then `coop login <hub> <token>`). In the project:
+`coop --orchestrator claude <session>`. In that session: `/pipeline <feature request>` — or
+ask to run the request "through the pipeline". As the orchestrator, the main session
+releases each agent that the session holds (coop `steer`) and reads the messages between
+the agents (coop `read`).
 The orchestrator starts each agent with `skills/pipeline/launch-agent.sh`, which runs
 `coop --agent <name> claude --agent agent-pipeline:<role> -p` with
 `--permission-mode auto`, because a headless agent cannot answer a permission prompt.

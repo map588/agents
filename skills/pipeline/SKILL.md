@@ -20,9 +20,13 @@ loop. Every agent reads it.
 
 ## Setup
 
-1. Call coop `status`. If `joined` is false, stop. Tell the user to run
-   `coop session <name>` in the project and then `coop claude`. Without a session there
-   is no pipeline.
+1. Call coop `status`. If `joined` is false, stop. Tell the user to start you as the
+   orchestrator in the project: `coop --orchestrator claude <session>`. Without a session
+   there is no pipeline.
+   - If you do not have the coop tools `steer` and `read`, you are not the orchestrator.
+     Tell the user: with `coop --orchestrator claude <session>` you release the agents
+     yourself. Without it, the user must release each agent in the TUI (`g`), or turn the
+     hold off (`H`). You can continue; say this once.
 2. Record these values for the run:
    - `SESSION` — the session name from `status`.
    - `ORCH` — your own name (`me` from `status`).
@@ -83,6 +87,12 @@ COOP_SESSION=<SESSION> <LAUNCH> <coop name> <working dir> .pipeline/prompts/<coo
 - The launch prompt gives `orchestrator=<ORCH>`, `protocol_path=<PROTOCOL>`, and the
   inputs that the agent definition lists. Give file paths, not content.
 - Launch agents of the same step in one message so they start together.
+- A session that holds new agents holds each agent at its join: its first tool call is
+  refused until it is released. After a launch, call coop `steer` with `action` `release`
+  and the coop name as `agent`. For a session that you run alone, call `steer` with
+  `action` `hold_off` one time at Setup; then each agent starts at once.
+- Coop starts an agent on another machine with `coop start -a <coop name> <machine>
+  <directory> <SESSION> [claude args]`. Use it only when the user asks for another machine.
 - When a background process exits, you get a notification. If the agent did not send
   `DONE` or `BLOCKED` first, read its log and treat the step as failed.
 
@@ -95,6 +105,10 @@ sleep. Handle each message:
 - `BLOCKED` — record it for the replan. Do not make a fix yourself.
 - A question to you — answer it if the artifacts answer it. If it needs the user, ask
   the user with `ask operator`, then answer the agent.
+
+Agents also talk to each other (`API` notices, questions to the researcher). These
+messages do not reach you as pushes. To see them, call coop `read`: it gives each
+message of the session. Use it before a phase decision, and when an agent seems stuck.
 
 Between phases, send the user a one-line status with `send operator` (phase done,
 headline finding).
