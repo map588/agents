@@ -70,6 +70,7 @@ releases each agent that the session holds (coop `steer`) and reads the messages
 the agents (coop `read`).
 The orchestrator starts each agent with `skills/pipeline/launch-agent.sh`, which runs
 `coop --agent <name> claude --agent agent-pipeline:<role> -p` with
-`--permission-mode auto`, because a headless agent cannot answer a permission prompt.
+`--permission-mode bypassPermissions`, because a headless agent cannot answer a permission
+prompt and auto mode refuses installs. coop's gate holds, pauses and stops each agent.
 One pipeline run per coop session: coop allows one live process for each agent name. Parallel engineering and rollback need the target to be a git repo; without
 one, engineers run sequentially in place.

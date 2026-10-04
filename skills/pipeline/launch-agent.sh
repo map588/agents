@@ -76,7 +76,7 @@ log=$log_dir/$name.log
 cmd=(coop --agent "$name" claude "$session"
   --plugin-dir "$plugin_root"
   --agent "agent-pipeline:$definition"
-  --permission-mode auto
+  --permission-mode bypassPermissions
   --allowedTools 'mcp__coop__*'
   "$@"
   -p "$(cat "$prompt_file")")

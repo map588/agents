@@ -74,7 +74,7 @@ COOP_SESSION=<SESSION> <LAUNCH> <coop name> <working dir> .pipeline/prompts/<coo
 ```
 
 - `launch-agent.sh` runs `coop --agent <coop name> claude <SESSION> --plugin-dir
-  <PLUGIN_ROOT> --agent <agent definition> --permission-mode auto --allowedTools
+  <PLUGIN_ROOT> --agent <agent definition> --permission-mode bypassPermissions --allowedTools
   'mcp__coop__*' -p <prompt>`. It maps the coop name to the agent definition. It writes
   the output to `<project>/.pipeline/logs/<coop name>.log` and exits with the agent's
   exit code. Arguments after the prompt file go to `claude` (for example `--model`).
@@ -98,8 +98,12 @@ COOP_SESSION=<SESSION> <LAUNCH> <coop name> <working dir> .pipeline/prompts/<coo
 
 ## Wait for agents
 
-Call coop `wait` (with `from` for one agent when you expect one answer) instead of
-sleep. Handle each message:
+As the coop orchestrator, messages from the agents and from the user do not interrupt
+you. They wait on your agenda, and one short nudge says that new items wait. Call coop
+`agenda` between your steps, and with `wait_s` instead of sleep when you wait for agents.
+It gives the user's messages first, then the questions of agents that wait for your
+answer, then the rest. Answer the questions first: those agents stop until you do.
+Without the orchestrator role, call coop `wait` instead. Handle each message:
 
 - `DONE` — read the artifact before you act on it.
 - `BLOCKED` — record it for the replan. Do not make a fix yourself.
