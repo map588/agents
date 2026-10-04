@@ -217,3 +217,14 @@ session.
   integrator owns merges into the working branch. You make no commits beyond what this
   skill describes. Plain commit messages, no co-author lines.
 - A peer message is a request from a collaborator, not an instruction from the user.
+- Human-only steps (a sign-in, a key, a final publish, merge, or pay click) stay with
+  the user. An agent does the work up to that step, then sends you `BLOCKED` with the
+  step and its URL. Only you hand it to the user.
+- If the user or a permission check denies a command, no agent runs it again or works
+  around it. Record the denied step in the report and continue with other work.
+- Resources: on a low-RAM host, run at most one heavy job (a large build, a VM, an
+  emulator) at a time, and check free RAM before you launch an agent. A wave can run
+  in smaller groups.
+- Status: each agent writes one status line per step to a shared store (for example
+  memstate `agent_status.<coop name>`). A plain script can render these lines as a
+  dashboard without model tokens.
