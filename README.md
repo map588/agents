@@ -64,7 +64,8 @@ Standalone: symlink `agents/*.md` into `~/.claude/agents/` and `skills/pipeline`
 
 Needs a coop session. In the project: `coop session <name>`, then `coop claude`. In that
 session: `/pipeline <feature request>` — or ask to run the request "through the pipeline".
-The orchestrator starts each agent with `claude --agent agent-pipeline:<role> -p` and
+The orchestrator starts each agent with `skills/pipeline/launch-agent.sh`, which runs
+`coop --agent <name> claude --agent agent-pipeline:<role> -p` with
 `--permission-mode auto`, because a headless agent cannot answer a permission prompt.
 One pipeline run per coop session: coop allows one live process for each agent name. Parallel engineering and rollback need the target to be a git repo; without
 one, engineers run sequentially in place.

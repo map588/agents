@@ -28,12 +28,13 @@ loop. Every agent reads it.
    - `ORCH` — your own name (`me` from `status`).
    - `PLUGIN_ROOT` — the directory two levels above this skill's base directory.
    - `PROTOCOL` — `<PLUGIN_ROOT>/skills/pipeline/protocol.md`.
+   - `LAUNCH` — `<PLUGIN_ROOT>/skills/pipeline/launch-agent.sh`.
    - `MAX_ROUNDS = 3`.
 3. Read the peer list. If a peer already has a pipeline agent name (below), stop and ask
    the user. One pipeline run per session, because coop allows one live process for
    each name on a machine.
 4. The target project is the current working directory unless the user says otherwise.
-   Create `.pipeline/`, `.pipeline/reports/`, and `.pipeline/logs/`. If the project is a
+   Create `.pipeline/`, `.pipeline/reports/`, and `.pipeline/prompts/`. If the project is a
    git repo and `.pipeline/` is not ignored, add it to `.git/info/exclude`.
 5. Artifacts:
    - `.pipeline/research.md`, `.pipeline/storyboard.md`, `.pipeline/plan.md`
@@ -52,24 +53,30 @@ loop. Every agent reads it.
 | researcher | `researcher` | `agent-pipeline:researcher` |
 | story-writer | `story-writer` | `agent-pipeline:story-writer` |
 | project-manager | `pm` | `agent-pipeline:project-manager` |
-| engineer for task T<n> | `eng-T<n>` | `agent-pipeline:engineer` |
+| engineer for task T<n> | `eng-t<n>` | `agent-pipeline:engineer` |
 | integrator | `integrator` | `agent-pipeline:integrator` |
 | e2e-tester | `tester` | `agent-pipeline:e2e-tester` |
 | validator | `validator` | `agent-pipeline:validator` |
 
+Coop names use only `a-z`, `0-9`, `-`, and `_`. Task T3 has the engineer `eng-t3`.
+
 ## Launch an agent
 
-Start each agent with the Bash tool and `run_in_background: true`:
+1. Write the launch prompt to `.pipeline/prompts/<coop name>.txt`.
+2. Start the agent with the Bash tool and `run_in_background: true`:
 
 ```bash
-cd <working dir> && COOP_SESSION=<SESSION> COOP_AGENT=<coop name> claude \
-  --plugin-dir <PLUGIN_ROOT> --agent <agent definition> \
-  --permission-mode auto --allowedTools 'mcp__coop__*' \
-  -p '<launch prompt>' > <project>/.pipeline/logs/<coop name>.log 2>&1
+COOP_SESSION=<SESSION> <LAUNCH> <coop name> <working dir> .pipeline/prompts/<coop name>.txt
 ```
 
-- Set `COOP_SESSION` and `COOP_AGENT` in the environment. A worktree does not contain
-  the project's `.coop` file, so an engineer cannot find the session without them.
+- `launch-agent.sh` runs `coop --agent <coop name> claude <SESSION> --plugin-dir
+  <PLUGIN_ROOT> --agent <agent definition> --permission-mode auto --allowedTools
+  'mcp__coop__*' -p <prompt>`. It maps the coop name to the agent definition. It writes
+  the output to `<project>/.pipeline/logs/<coop name>.log` and exits with the agent's
+  exit code. Arguments after the prompt file go to `claude` (for example `--model`).
+- The working directory is the project, except for an engineer: its worktree. A
+  worktree does not contain the project's `.coop` file, so always set `COOP_SESSION`.
+- Use `--dry-run` as the first argument to print the command without a launch.
 - The process is headless. It cannot answer a permission prompt, so the permission mode
   must not prompt. It cannot get pushed messages, so it reads messages with `wait` and
   `inbox`. The protocol is written for this.
@@ -141,7 +148,7 @@ For each wave, in order:
 
 1. For each task: `git worktree add .pipeline/worktrees/<task> -b pipeline/<task>` (off
    the current HEAD).
-2. In one message, launch one `eng-<task>` for each task and one `integrator`.
+2. In one message, launch one `eng-t<n>` for each task and one `integrator`.
    - Each engineer gets: task id, worktree path and branch, the plan and research paths,
      its report path (in the main checkout's `.pipeline/reports/`), the integrator's
      name, and the coop names of the other engineers in the wave.
