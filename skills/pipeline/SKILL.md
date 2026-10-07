@@ -99,11 +99,10 @@ COOP_SESSION=<SESSION> <LAUNCH> <coop name> <working dir> .pipeline/prompts/<coo
 ## Wait for agents
 
 As the coop orchestrator, messages from the agents and from the user do not interrupt
-you. They wait on your agenda, and one short nudge says that new items wait. Call coop
-`agenda` between your steps, and with `wait_s` instead of sleep when you wait for agents.
-It gives the user's messages first, then the questions of agents that wait for your
-answer, then the rest. Answer the questions first: those agents stop until you do.
-Without the orchestrator role, call coop `wait` instead. Handle each message:
+you one by one. They queue, and one short notice says that items wait. Call coop `inbox`
+between your steps, and coop `wait` instead of sleep when you wait for agents. Answer the
+user first, then each agent that waits for your answer (coop `sessions` shows
+`waiting_on`), then the rest: those agents stop until you do. Handle each message:
 
 - `DONE` — read the artifact before you act on it.
 - `BLOCKED` — record it for the replan. Do not make a fix yourself.
